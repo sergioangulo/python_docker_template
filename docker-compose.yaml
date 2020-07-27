@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  db:
+    image: mysql:8.0.19
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    volumes:
+        - db-data:/var/lib/mysql
+    networks:
+        backend-nt:
+            ipv4_address: 10.10.0.2
+    environment:
+      - MYSQL_DATABASE=example
+      - MYSQL_ROOT_PASSWORD=password
+
+  app:
+    build: app
+    restart: always
+    ports:
+        - 5000:5000
+    networks:
+         backend-nt:
+            ipv4_address: 10.10.0.3
+ 
+volumes:
+    db-data:
+
+networks:
+    backend-nt:
+        driver: bridge
+        driver_opts:
+            com.docker.network.enable_ipv6: "false"
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.10.0.0/16
+            
